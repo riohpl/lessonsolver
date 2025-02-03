@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Clock, Mail, Users, X } from 'lucide-react';
+import { Mail, Users, X } from 'lucide-react';
 
 const StudentAvailabilityForm = ({ teacherSchedule }) => {
   const [step, setStep] = useState('email'); // email -> verify -> students -> availability

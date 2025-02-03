@@ -6,7 +6,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, AlertTriangle, Check, RefreshCcw } from "lucide-react";
 
-const ScheduleAnalyzer = ({ teacherSchedule, studentResponses }) => {
+const ScheduleAnalyzer = ({ teacherSchedule: [], studentResponses: [] }) => {
   const [analysis, setAnalysis] = useState(null);
   const [proposedSchedule, setProposedSchedule] = useState(null);
 
