@@ -6,7 +6,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, AlertTriangle, Check, RefreshCcw } from "lucide-react";
 
-const ScheduleAnalyzer = ({ teacherSchedule: [], studentResponses: [] }) => {
+const ScheduleAnalyzer = ({ teacherSchedule = {}, studentResponses = [] }) => {
   const [analysis, setAnalysis] = useState(null);
   const [proposedSchedule, setProposedSchedule] = useState(null);
 
@@ -18,11 +18,15 @@ const ScheduleAnalyzer = ({ teacherSchedule: [], studentResponses: [] }) => {
     // Count available slots per student
     studentResponses.forEach((student) => {
       let availableSlots = 0;
+
       Object.entries(teacherSchedule).forEach(([day, { slots }]) => {
+        if (!slots) return;
         slots.forEach((slot, index) => {
           if (
             slot.type === "open" &&
-            !student.unavailableTimes[day].includes(index)
+            (!student.unavailableTimes ||
+              !student.unavailableTimes[day] ||
+              !student.unavailableTimes[day].includes(index))
           ) {
             availableSlots++;
           }
@@ -32,14 +36,14 @@ const ScheduleAnalyzer = ({ teacherSchedule: [], studentResponses: [] }) => {
       // Flag students with limited availability
       if (availableSlots < 3) {
         problematics.push({
-          student: student.students[0].name,
+          student: student.students[0]?.name || "Unknown",
           email: student.email,
           availableSlots,
           reason: "Very limited availability",
         });
       } else if (availableSlots < 5) {
         warnings.push({
-          student: student.students[0].name,
+          student: student.students[0]?.name || "Unknown",
           email: student.email,
           availableSlots,
           reason: "Limited availability",
@@ -77,12 +81,15 @@ const ScheduleAnalyzer = ({ teacherSchedule: [], studentResponses: [] }) => {
   const countConsecutiveSlotPairs = (response, schedule) => {
     let count = 0;
     Object.entries(schedule).forEach(([day, { slots }]) => {
+      if (!slots) return;
       for (let i = 0; i < slots.length - 1; i++) {
         if (
           slots[i].type === "open" &&
           slots[i + 1].type === "open" &&
-          !response.unavailableTimes[day].includes(i) &&
-          !response.unavailableTimes[day].includes(i + 1)
+          (!response.unavailableTimes ||
+            !response.unavailableTimes[day] ||
+            (!response.unavailableTimes[day].includes(i) &&
+              !response.unavailableTimes[day].includes(i + 1)))
         ) {
           count++;
         }
@@ -93,15 +100,12 @@ const ScheduleAnalyzer = ({ teacherSchedule: [], studentResponses: [] }) => {
 
   // Generate proposed schedule
   const generateSchedule = () => {
-    // TODO: Implement actual scheduling algorithm
-    // For now, just showing the structure
+    // Placeholder for the actual scheduling algorithm
     return {
       monday: [
         { time: "14:00-14:30", student: "Alice" },
         { time: "14:30-15:00", student: "Bob" },
-        // etc.
       ],
-      // other days...
     };
   };
 
@@ -196,16 +200,6 @@ const ScheduleAnalyzer = ({ teacherSchedule: [], studentResponses: [] }) => {
           >
             Generate Schedule
           </Button>
-
-          {analysis?.problematics.length > 0 && (
-            <Alert>
-              <AlertCircle className="w-4 h-4" />
-              <AlertDescription>
-                Please resolve critical availability issues before generating
-                the schedule.
-              </AlertDescription>
-            </Alert>
-          )}
 
           {proposedSchedule && (
             <div className="space-y-4">

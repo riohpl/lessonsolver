@@ -1,0 +1,47 @@
+{
+  "teacherSchedule": {
+    "monday": {
+      "enabled": true,
+      "slots": [
+        {
+          "start": "14:00",
+          "end": "15:00",
+          "type": "open",
+          "note": ""
+        },
+        {
+          "start": "15:00",
+          "end": "16:00",
+          "type": "blocked",
+          "note": "Break"
+        }
+      ]
+    },
+    "tuesday": {
+      "enabled": true,
+      "slots": [
+        {
+          "start": "14:00",
+          "end": "19:00",
+          "type": "open",
+          "note": ""
+        }
+      ]
+    }
+  },
+
+  "settings": {
+    "defaultLessonDuration": 30,
+    "breakBetweenLessons": 5,
+    "maxStudentsPerDay": 8,
+    "location": "home"
+  },
+
+  "validationErrors": [
+    "monday: Open slot (2:00 PM - 3:00 PM) overlaps with Blocked slot (2:30 PM - 3:30 PM)",
+    "wednesday: No available slots defined"
+  ],
+
+  "status": "error",
+  "timestamp": "2024-03-14T12:00:00Z"
+}

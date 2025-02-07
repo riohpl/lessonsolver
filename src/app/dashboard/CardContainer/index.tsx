@@ -43,6 +43,7 @@ const CardContainer = (props: Props) => {
   const CardList = Cards.map((card) => {
     return (
       <CustomCard
+        key={card.title}
         title={card.title}
         icon={card.icon}
         value={card.value}
