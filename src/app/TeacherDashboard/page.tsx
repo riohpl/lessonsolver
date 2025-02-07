@@ -341,11 +341,12 @@ const TeacherAvailability = () => {
               onClick={() => {
                 const errors = validateSchedule();
                 const errorDiv = document.getElementById("validation-errors");
+                console.log(errors, "ERRORSSSSS");
 
                 if (errors.length > 0) {
-                  // Show errors
                   errorDiv.innerHTML = `
                     <div class="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+
                       <p class="font-bold">Please fix the following conflicts:</p>
                       <ul class="list-disc ml-5 mt-2">
                         ${errors.map((error) => `<li>${error}</li>`).join("")}
@@ -353,9 +354,8 @@ const TeacherAvailability = () => {
                     </div>
                   `;
                 } else {
-                  // Clear any existing errors
                   errorDiv.innerHTML = "";
-                  // TODO: Proceed with saving
+
                   console.log("Schedule is valid, saving...");
                 }
               }}
