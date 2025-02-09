@@ -18,14 +18,14 @@ type Props = {
 const CustomCard = (props: Props) => {
   const { title, icon, value, description } = props;
   return (
-    <Card className="w-full md:w-1/4">
+    <Card className="w-full md:w-1/4 ">
       <CardHeader className="flex flex-row items-center justify-between p-4">
         <CardTitle>{title}</CardTitle>
         {icon}
       </CardHeader>
       <CardContent className="">
         <div className="flex flex-row items-center">
-          <h1 className="text-3xl font-bold">{value}</h1>
+          <h1 className="text-3xl font-bold ">{value}</h1>
         </div>
         <CardDescription>{description}</CardDescription>
       </CardContent>

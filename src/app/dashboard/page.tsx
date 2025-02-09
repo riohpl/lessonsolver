@@ -89,113 +89,101 @@ export default function Page() {
     );
   };
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex sticky top-0 bg-background h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          <CardContainer />
-          <div className="flex gap-4">
-            <Button variant={"outline"} onClick={sendAllReminders}>
-              <Mail />
-              Send Reminders
-            </Button>
-            <Button variant={"default"}>
-              <RefreshCw />
-              Generate Schedule
-            </Button>
-          </div>
-          <Separator />
-          <Card className="flex flex-col gap-4 p-6">
-            <CardHeader>
-              <CardTitle>Student Submission Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {students.map((student) => (
-                  <div
-                    key={student.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
-                  >
-                    <div className="space-y-1">
-                      <div className="font-medium">{student.parentName}</div>
-                      <div className="text-sm text-gray-600">
-                        Students: {student.studentNames.join(", ")}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {student.email}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-4">
-                      {student.status === "submitted" && (
-                        <div className="flex items-center text-green-600">
-                          <CheckCircle className="w-4 h-4 mr-1" />
-                          <span className="text-sm">
-                            Submitted{" "}
-                            {new Date(
-                              student.submittedAt || ""
-                            ).toLocaleDateString()}
-                          </span>
-                        </div>
-                      )}
-                      {student.status === "pending" && (
-                        <div className="flex items-center text-yellow-600">
-                          <Clock className="w-4 h-4 mr-1" />
-                          <span className="text-sm">Pending Response</span>
-                        </div>
-                      )}
-                      {student.status === "not_sent" && (
-                        <div className="flex items-center text-gray-600">
-                          <Mail className="w-4 h-4 mr-1" />
-                          <span className="text-sm">Not Sent</span>
-                        </div>
-                      )}
-                      {student.status === "pending" && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => sendReminder(student.id)}
-                          disabled={
-                            student.reminded &&
-                            new Date(student.lastReminder || "").getTime() >
-                              Date.now() - 24 * 60 * 60 * 1000
-                          }
-                        >
-                          <Send className="w-4 h-4 mr-1" />
-                          Send Reminder
-                        </Button>
-                      )}
-                      {student.status === "not_sent" && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setStudents(
-                              students.map((s) =>
-                                s.id === student.id
-                                  ? { ...s, status: "pending" }
-                                  : s
-                              )
-                            );
-                          }}
-                        >
-                          <Mail className="w-4 h-4 mr-1" />
-                          Send Link
-                        </Button>
-                      )}
-                    </div>
+    <>
+      <CardContainer />
+      <div className="flex gap-4">
+        <Button variant={"outline"} onClick={sendAllReminders}>
+          <Mail />
+          Send Reminders
+        </Button>
+        <Button variant={"default"}>
+          <RefreshCw />
+          Generate Schedule
+        </Button>
+      </div>
+      <Separator />
+      <Card className="flex flex-col gap-4 p-6">
+        <CardHeader>
+          <CardTitle>Student Submission Status</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {students.map((student) => (
+              <div
+                key={student.id}
+                className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+              >
+                <div className="space-y-1">
+                  <div className="font-medium">{student.parentName}</div>
+                  <div className="text-sm text-gray-600">
+                    Students: {student.studentNames.join(", ")}
                   </div>
-                ))}
+                  <div className="text-sm text-gray-500">{student.email}</div>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  {student.status === "submitted" && (
+                    <div className="flex items-center text-green-600">
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      <span className="text-sm">
+                        Submitted{" "}
+                        {new Date(
+                          student.submittedAt || ""
+                        ).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
+                  {student.status === "pending" && (
+                    <div className="flex items-center text-yellow-600">
+                      <Clock className="w-4 h-4 mr-1" />
+                      <span className="text-sm">Pending Response</span>
+                    </div>
+                  )}
+                  {student.status === "not_sent" && (
+                    <div className="flex items-center text-gray-600">
+                      <Mail className="w-4 h-4 mr-1" />
+                      <span className="text-sm">Not Sent</span>
+                    </div>
+                  )}
+                  {student.status === "pending" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => sendReminder(student.id)}
+                      disabled={
+                        student.reminded &&
+                        new Date(student.lastReminder || "").getTime() >
+                          Date.now() - 24 * 60 * 60 * 1000
+                      }
+                    >
+                      <Send className="w-4 h-4 mr-1" />
+                      Send Reminder
+                    </Button>
+                  )}
+                  {student.status === "not_sent" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setStudents(
+                          students.map((s) =>
+                            s.id === student.id
+                              ? { ...s, status: "pending" }
+                              : s
+                          )
+                        );
+                      }}
+                    >
+                      <Mail className="w-4 h-4 mr-1" />
+                      Send Link
+                    </Button>
+                  )}
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

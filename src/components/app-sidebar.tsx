@@ -24,6 +24,11 @@ const data = {
       url: "/",
       isActive: true,
     },
+    {
+      title: "Teacher Dashboard",
+      url: "/TeacherDashboard",
+      isActive: false,
+    },
   ],
 };
 

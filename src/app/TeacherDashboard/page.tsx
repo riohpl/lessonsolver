@@ -6,16 +6,30 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Clock, Trash2 } from "lucide-react";
 
+type TeachingDays = {
+  [key: string]: {
+    enabled: boolean;
+    slots: { start: string; end: string; type: string; note: string }[];
+  };
+};
+
+type SlotType = {
+  start: string;
+  end: string;
+  type: string;
+  note: string;
+};
+
 const TeacherAvailability = () => {
-  const [teachingDays, setTeachingDays] = useState({
+  const [teachingDays, setTeachingDays] = useState<TeachingDays>({
     monday: {
       enabled: true,
       slots: [
         {
           start: "14:00",
           end: "19:00",
-          type: "open", // 'open' or 'blocked'
-          note: "", // e.g., "Dinner break"
+          type: "open",
+          note: "",
         },
       ],
     },
@@ -45,6 +59,8 @@ const TeacherAvailability = () => {
     },
   });
 
+  const [errors, setErrors] = useState<string[]>([]);
+
   const [settings, setSettings] = useState({
     defaultLessonDuration: 30,
     breakBetweenLessons: 0,
@@ -52,7 +68,8 @@ const TeacherAvailability = () => {
     location: "home",
   });
 
-  const addTimeSlot = (day) => {
+  const addTimeSlot = (day: string) => {
+    console.log(day, "DAY");
     setTeachingDays((prev) => ({
       ...prev,
       [day]: {
@@ -70,7 +87,7 @@ const TeacherAvailability = () => {
     }));
   };
 
-  const toggleDay = (day) => {
+  const toggleDay = (day: string) => {
     setTeachingDays((prev) => ({
       ...prev,
       [day]: {
@@ -80,7 +97,7 @@ const TeacherAvailability = () => {
     }));
   };
 
-  const updateSlotType = (day, index, type) => {
+  const updateSlotType = (day: string, index: number, type: string) => {
     setTeachingDays((prev) => {
       const newSlots = [...prev[day].slots];
       newSlots[index] = {
@@ -94,7 +111,7 @@ const TeacherAvailability = () => {
     });
   };
 
-  const updateSlotNote = (day, index, note) => {
+  const updateSlotNote = (day: string, index: number, note: string) => {
     setTeachingDays((prev) => {
       const newSlots = [...prev[day].slots];
       newSlots[index] = {
@@ -109,13 +126,14 @@ const TeacherAvailability = () => {
   };
 
   // Convert time string to minutes for easier comparison
-  const timeToMinutes = (timeStr) => {
+  const timeToMinutes = (timeStr: string) => {
     const [hours, minutes] = timeStr.split(":").map(Number);
     return hours * 60 + minutes;
   };
 
   // Check if two time slots overlap
-  const doSlotsOverlap = (slot1, slot2) => {
+  const doSlotsOverlap = (slot1: SlotType, slot2: SlotType) => {
+    console.log(slot1, slot2, "SLOTTESTEST");
     const start1 = timeToMinutes(slot1.start);
     const end1 = timeToMinutes(slot1.end);
     const start2 = timeToMinutes(slot2.start);
@@ -126,11 +144,10 @@ const TeacherAvailability = () => {
 
   // Validate all time slots
   const validateSchedule = () => {
-    const errors = [];
+    let errors = [];
 
     Object.entries(teachingDays).forEach(([day, { enabled, slots }]) => {
       if (!enabled) return;
-
       // Check each slot
       slots.forEach((slot, index) => {
         // Format time for display (24h to 12h conversion)
@@ -157,14 +174,12 @@ const TeacherAvailability = () => {
           return desc;
         };
 
-        // Check if end time is before start time
         if (timeToMinutes(slot.end) <= timeToMinutes(slot.start)) {
           errors.push(
             `${day}: ${getSlotDesc(slot)} ends before or at its start time`
           );
         }
 
-        // Check for overlaps with other slots
         slots.forEach((otherSlot, otherIndex) => {
           if (index !== otherIndex && doSlotsOverlap(slot, otherSlot)) {
             errors.push(
@@ -333,7 +348,6 @@ const TeacherAvailability = () => {
               ))}
             </div>
 
-            {/* Validation Alert */}
             <div id="validation-errors" className="mb-4"></div>
 
             <Button
@@ -343,7 +357,7 @@ const TeacherAvailability = () => {
                 const errorDiv = document.getElementById("validation-errors");
                 console.log(errors, "ERRORSSSSS");
 
-                if (errors.length > 0) {
+                if (errors.length > 0 && errorDiv) {
                   errorDiv.innerHTML = `
                     <div class="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
 

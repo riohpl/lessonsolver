@@ -14,32 +14,53 @@ const CardContainer = (props: Props) => {
       icon: <Users color="gray" style={{ marginTop: 0 }} />,
       value: "100",
       description: "Number of Students in the appointment",
+      style: {
+        textColor: "red",
+        backgroundColor: "red",
+      },
     },
     {
       title: "Submitted",
       icon: <MailCheck color="gray" style={{ marginTop: 0 }} />,
       value: "50",
       description: "Submitted Reminders",
+      style: {
+        textColor: "red",
+        backgroundColor: "red",
+      },
     },
     {
       title: "Pending Responses",
       icon: <MailQuestion color="gray" style={{ marginTop: 0 }} />,
       value: "30",
       description: "Pending Reminders from Students",
+      style: {
+        textColor: "red",
+        backgroundColor: "red",
+      },
     },
     {
       title: "Not Sent",
       icon: <MailX color="gray" style={{ marginTop: 0 }} />,
       value: "1",
       description: "Reminders that are not sent",
+      style: {
+        textColor: "red",
+        backgroundColor: "red",
+      },
     },
     {
       title: "Cancelled",
       icon: <MailX color="gray" style={{ marginTop: 0 }} />,
       value: "1",
       description: "Students who cancelled the appointment",
+      style: {
+        textColor: "red",
+        backgroundColor: "red",
+      },
     },
   ];
+
   const CardList = Cards.map((card) => {
     return (
       <CustomCard
