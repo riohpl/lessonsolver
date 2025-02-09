@@ -5,17 +5,32 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Clock, Trash2 } from "lucide-react";
+import { set } from "date-fns";
+
+type TeachingDays = {
+  [key: string]: {
+    enabled: boolean;
+    slots: { start: string; end: string; type: string; note: string }[];
+  };
+};
+
+type SlotType = {
+  start: string;
+  end: string;
+  type: string;
+  note: string;
+};
 
 const TeacherAvailability = () => {
-  const [teachingDays, setTeachingDays] = useState({
+  const [teachingDays, setTeachingDays] = useState<TeachingDays>({
     monday: {
       enabled: true,
       slots: [
         {
           start: "14:00",
           end: "19:00",
-          type: "open", // 'open' or 'blocked'
-          note: "", // e.g., "Dinner break"
+          type: "open",
+          note: "",
         },
       ],
     },
@@ -45,6 +60,8 @@ const TeacherAvailability = () => {
     },
   });
 
+  const [errors, setErrors] = useState<string[]>([]);
+
   const [settings, setSettings] = useState({
     defaultLessonDuration: 30,
     breakBetweenLessons: 0,
@@ -52,7 +69,8 @@ const TeacherAvailability = () => {
     location: "home",
   });
 
-  const addTimeSlot = (day) => {
+  const addTimeSlot = (day: string) => {
+    console.log(day, "DAY");
     setTeachingDays((prev) => ({
       ...prev,
       [day]: {
@@ -70,7 +88,7 @@ const TeacherAvailability = () => {
     }));
   };
 
-  const toggleDay = (day) => {
+  const toggleDay = (day: string) => {
     setTeachingDays((prev) => ({
       ...prev,
       [day]: {
@@ -80,7 +98,7 @@ const TeacherAvailability = () => {
     }));
   };
 
-  const updateSlotType = (day, index, type) => {
+  const updateSlotType = (day: string, index: number, type: string) => {
     setTeachingDays((prev) => {
       const newSlots = [...prev[day].slots];
       newSlots[index] = {
@@ -94,7 +112,7 @@ const TeacherAvailability = () => {
     });
   };
 
-  const updateSlotNote = (day, index, note) => {
+  const updateSlotNote = (day: string, index: number, note: string) => {
     setTeachingDays((prev) => {
       const newSlots = [...prev[day].slots];
       newSlots[index] = {
@@ -109,13 +127,13 @@ const TeacherAvailability = () => {
   };
 
   // Convert time string to minutes for easier comparison
-  const timeToMinutes = (timeStr) => {
+  const timeToMinutes = (timeStr: string) => {
     const [hours, minutes] = timeStr.split(":").map(Number);
     return hours * 60 + minutes;
   };
 
   // Check if two time slots overlap
-  const doSlotsOverlap = (slot1, slot2) => {
+  const doSlotsOverlap = (slot1: SlotType, slot2: SlotType) => {
     const start1 = timeToMinutes(slot1.start);
     const end1 = timeToMinutes(slot1.end);
     const start2 = timeToMinutes(slot2.start);
@@ -126,11 +144,11 @@ const TeacherAvailability = () => {
 
   // Validate all time slots
   const validateSchedule = () => {
-    const errors = [];
+    // let errors = [];
+    setErrors([]);
 
     Object.entries(teachingDays).forEach(([day, { enabled, slots }]) => {
       if (!enabled) return;
-
       // Check each slot
       slots.forEach((slot, index) => {
         // Format time for display (24h to 12h conversion)
@@ -143,7 +161,8 @@ const TeacherAvailability = () => {
         };
 
         // Format slot description
-        const getSlotDesc = (s) => {
+        const getSlotDesc = (s: SlotType) => {
+          console.log(s, "SLOTSLOTSLOT");
           let desc = `"${
             s.type === "open" ? "Open for Students" : "Blocked"
           }" slot`;
@@ -154,30 +173,31 @@ const TeacherAvailability = () => {
           } else {
             desc += ` (${formatTime(s.start)} - ${formatTime(s.end)})`;
           }
+          console.log(desc, "DESCDESC");
           return desc;
         };
 
-        // Check if end time is before start time
         if (timeToMinutes(slot.end) <= timeToMinutes(slot.start)) {
-          errors.push(
-            `${day}: ${getSlotDesc(slot)} ends before or at its start time`
-          );
+          console.log(slot, "SLOTTESTEST1");
+          setErrors((prev) => [
+            ...prev,
+            `${day}: ${getSlotDesc(slot)} ends before or at its start time`,
+          ]);
         }
-
-        // Check for overlaps with other slots
-        slots.forEach((otherSlot, otherIndex) => {
-          if (index !== otherIndex && doSlotsOverlap(slot, otherSlot)) {
-            errors.push(
+        console.log(slots, "SLOTCOUNT");
+        if (index < slots.length - 1) {
+          const nextSlot = slots[index + 1];
+          if (doSlotsOverlap(slot, nextSlot)) {
+            setErrors((prev) => [
+              ...prev,
               `${day}: ${getSlotDesc(slot)} overlaps with ${getSlotDesc(
-                otherSlot
-              )}`
-            );
+                nextSlot
+              )}`,
+            ]);
           }
-        });
+        }
       });
     });
-
-    return errors;
   };
 
   return (
@@ -226,7 +246,6 @@ const TeacherAvailability = () => {
               </div>
             </div>
 
-            {/* Weekly Schedule */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Weekly Schedule</h3>
               {Object.entries(teachingDays).map(([day, { enabled, slots }]) => (
@@ -303,7 +322,6 @@ const TeacherAvailability = () => {
                           className="w-32"
                         />
 
-                        {/* Slot Type Selection */}
                         <select
                           value={slot.type}
                           onChange={(e) =>
@@ -315,7 +333,6 @@ const TeacherAvailability = () => {
                           <option value="blocked">Blocked</option>
                         </select>
 
-                        {/* Note input for blocked time */}
                         {slot.type === "blocked" && (
                           <Input
                             type="text"
@@ -332,32 +349,43 @@ const TeacherAvailability = () => {
                 </div>
               ))}
             </div>
-
-            {/* Validation Alert */}
-            <div id="validation-errors" className="mb-4"></div>
+            {errors.length > 0 ? (
+              <div id="validation-errors" className="mb-4">
+                <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                  <p className="font-bold">
+                    Please fix the following conflicts:
+                  </p>
+                  <ul className="list-disc ml-5 mt-2">
+                    {errors.map((error, index) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : null}
 
             <Button
               className="w-full bg-blue-500 text-white"
               onClick={() => {
-                const errors = validateSchedule();
-                const errorDiv = document.getElementById("validation-errors");
+                validateSchedule();
+                // const errorDiv = document.getElementById("validation-errors");
+                // console.log(errors, "ERRORSSSSS");
 
-                if (errors.length > 0) {
-                  // Show errors
-                  errorDiv.innerHTML = `
-                    <div class="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                      <p class="font-bold">Please fix the following conflicts:</p>
-                      <ul class="list-disc ml-5 mt-2">
-                        ${errors.map((error) => `<li>${error}</li>`).join("")}
-                      </ul>
-                    </div>
-                  `;
-                } else {
-                  // Clear any existing errors
-                  errorDiv.innerHTML = "";
-                  // TODO: Proceed with saving
-                  console.log("Schedule is valid, saving...");
-                }
+                // if (errors.length > 0 && errorDiv) {
+                //   errorDiv.innerHTML = `
+                //     <div class="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+
+                //       <p class="font-bold">Please fix the following conflicts:</p>
+                //       <ul class="list-disc ml-5 mt-2">
+                //         ${errors.map((error) => `<li>${error}</li>`).join("")}
+                //       </ul>
+                //     </div>
+                //   `;
+                // } else {
+                //   errorDiv.innerHTML = "";
+
+                //   console.log("Schedule is valid, saving...");
+                // }
               }}
             >
               Save Availability
