@@ -5,7 +5,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Clock, Trash2 } from "lucide-react";
-
 type TeachingDays = {
   [key: string]: {
     enabled: boolean;

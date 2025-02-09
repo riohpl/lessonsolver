@@ -27,7 +27,7 @@ const data = {
     },
     {
       title: "Teacher Dashboard",
-      url: "/TeacherDashboard",
+      url: "/pages/TeacherDashboard",
       isActive: false,
     },
   ],
