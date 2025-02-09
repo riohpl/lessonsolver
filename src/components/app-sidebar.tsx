@@ -14,7 +14,8 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const data = {
   versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
@@ -26,17 +27,25 @@ const data = {
     },
     {
       title: "Teacher Dashboard",
-      url: "/TeacherDashboard",
+      url: "/pages/TeacherDashboard",
       isActive: false,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [navLinks, setNavLinks] = useState(data.navMain);
   const router = useRouter();
+  const pathname = usePathname();
+  useEffect(() => {
+    localStorage.setItem("pages", JSON.stringify(data.navMain));
+  }, []);
 
-  const handleRouting = (url: string) => {
-    router.push(url);
+  const CheckActive = (title: string) => {
+    if (pathname === title) {
+      return true;
+    }
+    return false;
   };
   return (
     <Sidebar {...props}>
@@ -48,7 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SearchForm />
       </SidebarHeader>
       <SidebarContent className="gap-0">
-        {data.navMain.map((item) => (
+        {navLinks.map((item) => (
           <Collapsible
             key={item.title}
             title={item.title}
@@ -59,10 +68,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive}>
-                      <a onClick={() => handleRouting(item.url)}>
-                        {item.title}
-                      </a>
+                    <SidebarMenuButton asChild isActive={CheckActive(item.url)}>
+                      <a onClick={() => router.push(item.url)}>{item.title}</a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
